@@ -94,4 +94,8 @@ public class GameShopService {
         }
     }
 
+    /**
+     *  TODO: Add logic to get the average review score and total number of reviews
+     */
+
 }
