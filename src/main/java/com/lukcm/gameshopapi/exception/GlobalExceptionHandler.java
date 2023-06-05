@@ -3,6 +3,7 @@ package com.lukcm.gameshopapi.exception;
 import com.mongodb.MongoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -16,6 +17,12 @@ public class GlobalExceptionHandler {
 
         // return an error response
         return new ResponseEntity<>("Error connecting to MongoDB: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
+        String paramName = ex.getParameterName();
+        return new ResponseEntity<>("The required parameter " + paramName + " is missing.", HttpStatus.BAD_REQUEST);
     }
 
 }
