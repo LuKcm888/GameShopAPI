@@ -73,6 +73,32 @@ public class GameShopController {
     }
 
     /**
+     * Handles the HTTP GET requests that fetch the average review score for a specific game.
+     *
+     * @param id The ID of the game whose average review score is to be retrieved.
+     *
+     * @return A ResponseEntity containing the average review score and HTTP status.
+     *         If the operation was successful, the status is HTTP 200 (OK) and the body
+     *         contains the average score. If the game with the specified ID was not found,
+     *         the status is HTTP 404 (Not Found) and the body is empty.
+     *
+     * This method attempts to fetch the average review score of the game with the specified
+     * ID by calling the getAverageScore() method in the GameShopService. If successful,
+     * it returns a ResponseEntity with the average score and a status of HttpStatus.OK.
+     * If a RuntimeException is caught (which occurs when the game with the specified ID
+     * cannot be found), it returns a ResponseEntity with a status of HttpStatus.NOT_FOUND.
+     */
+    @GetMapping("/{id}/average-score")
+    public ResponseEntity<Double> getAverageScore(@PathVariable String id) {
+        try {
+            double averageScore = gameShopService.getAverageScore(id);
+            return new ResponseEntity<>(averageScore, HttpStatus.OK);
+        } catch (RuntimeException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
      * Handles the DELETE request to remove a game by its ID.
      *
      * @param id the unique ID of the game

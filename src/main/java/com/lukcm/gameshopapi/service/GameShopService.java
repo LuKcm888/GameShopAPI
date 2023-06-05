@@ -1,6 +1,7 @@
 package com.lukcm.gameshopapi.service;
 
 import com.lukcm.gameshopapi.model.Game;
+import com.lukcm.gameshopapi.model.Review;
 import com.lukcm.gameshopapi.repository.GameShopRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,6 @@ public class GameShopService {
         return gameRepository.findByTitleContainingIgnoreCase(title);
     }
 
-
     /**
      * Adds a new game to the database.
      *
@@ -77,6 +77,36 @@ public class GameShopService {
             return gameRepository.save(game);
         }catch (DataAccessException ex) {
             throw new RuntimeException("Error saving game to database", ex);
+        }
+    }
+
+    /**
+     * Retrieves the average review score for a game with the specified ID.
+     *
+     * @param gameId The ID of the game whose average review score should be calculated.
+     *
+     * @return The average review score of the game. If the game has no reviews, it returns 0.0.
+     *
+     * @throws RuntimeException If the game with the specified ID does not exist in the database.
+     *
+     * This method works by first retrieving the game from the repository. If the game is found,
+     * it fetches the list of reviews for the game and calculates the average score. The average
+     * is calculated by converting each review to its score using a stream, calculating the average
+     * of these scores, and then returning this average. If there are no reviews, it defaults to 0.0.
+     *
+     * If the game does not exist, a runtime exception is thrown.
+     */
+    public double getAverageScore(String gameId) {
+        Optional<Game> gameOptional = gameRepository.findById(gameId);
+
+        if (gameOptional.isPresent()) {
+            List<Review> reviews = gameOptional.get().getReviews();
+            return reviews.stream()
+                    .mapToDouble(Review::getScore)
+                    .average()
+                    .orElse(0.0);  // default value if no reviews
+        } else {
+            throw new RuntimeException("Error: Game with ID " + gameId + " not found");
         }
     }
 
