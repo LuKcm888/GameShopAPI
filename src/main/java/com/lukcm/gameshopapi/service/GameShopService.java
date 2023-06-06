@@ -3,6 +3,8 @@ package com.lukcm.gameshopapi.service;
 import com.lukcm.gameshopapi.model.Game;
 import com.lukcm.gameshopapi.model.Review;
 import com.lukcm.gameshopapi.repository.GameShopRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +12,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * @author Max_MacKoul
+ *
  * Service layer for handling game-related operations.
  */
 @Service
 public class GameShopService {
 
+    // Logger for this class
+    private static final Logger logger = LogManager.getLogger(GameShopService.class);
     private final GameShopRepository gameRepository;
 
     /**
@@ -33,10 +39,16 @@ public class GameShopService {
      * @throws RuntimeException if an error occurs during database access
      */
     public List<Game> getAllGames() {
+        String methodName = ".getAllGames";
+        logger.info("{}: entering method", methodName);
+
         try {
             return gameRepository.findAll();
         } catch (DataAccessException ex) {
+            logger.error("{}: Error fetching games from database: {}", methodName, ex);
             throw new RuntimeException("Error fetching games from database", ex);
+        }finally {
+            logger.info("{}: exiting method", methodName);
         }
     }
 
@@ -48,10 +60,16 @@ public class GameShopService {
      * @throws RuntimeException if an error occurs during database access
      */
     public Optional<Game> getGameById(String id) {
+        String methodName = ".getGameById";
+        logger.info("{}: entering method", methodName);
+
         try {
             return gameRepository.findById(id);
         } catch (DataAccessException ex) {
+            logger.error("{}: Error fetching game with ID {} from database: {}", methodName, id, ex);
             throw new RuntimeException("Error fetching game with ID " + id + " from database", ex);
+        }finally {
+            logger.info("{}: exiting method", methodName);
         }
     }
 
@@ -62,7 +80,17 @@ public class GameShopService {
      * @return a list of games that match the search criteria
      */
     public List<Game> getGamesByTitle(String title) {
-        return gameRepository.findByTitleContainingIgnoreCase(title);
+        String methodName = ".getGamesByTitle";
+        logger.info("{}: entering method", methodName);
+
+        try {
+            return gameRepository.findByTitleContainingIgnoreCase(title);
+        }catch (DataAccessException ex) {
+            logger.error("{}: Error fetching title from database: {}", methodName, ex);
+            throw new RuntimeException("Error fetching title from database:", ex);
+        }finally {
+            logger.info("{}: exiting method", methodName);
+        }
     }
 
     /**
@@ -73,10 +101,17 @@ public class GameShopService {
      * @throws RuntimeException if an error occurs during database access
      */
     public Game addGame(Game game) {
+        String methodName = ".getGameById";
+        logger.info("{}: entering method", methodName);
+
         try {
+            logger.info("{}: exiting method", methodName);
             return gameRepository.save(game);
         }catch (DataAccessException ex) {
+            logger.error("Error fetching games from database", ex);
             throw new RuntimeException("Error saving game to database", ex);
+        }finally {
+            logger.info("{}: exiting method", methodName);
         }
     }
 
@@ -97,18 +132,27 @@ public class GameShopService {
      * If the game does not exist, a runtime exception is thrown.
      */
     public double getAverageScore(String gameId) {
+        String methodName = ".getAverageScore";
+        logger.info("{}: entering method", methodName);
         Optional<Game> gameOptional = gameRepository.findById(gameId);
 
         if (gameOptional.isPresent()) {
+            logger.info("{}: gameOptional is present", methodName);
             List<Review> reviews = gameOptional.get().getReviews();
+            logger.info("{}: exiting method", methodName);
             return reviews.stream()
                     .mapToDouble(Review::getScore)
                     .average()
                     .orElse(0.0);  // default value if no reviews
         } else {
+            logger.error( "{} Game with ID {} not found", methodName,gameId);
             throw new RuntimeException("Error: Game with ID " + gameId + " not found");
         }
     }
+
+    /**
+     *  TODO: Add logic to get the total number of reviews
+     */
 
     /**
      * Deletes a game from the database by its ID.
@@ -117,15 +161,16 @@ public class GameShopService {
      * @throws RuntimeException if an error occurs during database access
      */
     public void deleteGame(String id) {
+        String methodName = ".deleteGame";
+        logger.info("{}: entering method", methodName);
+
         try {
             gameRepository.deleteById(id);
         }catch (DataAccessException ex) {
+            logger.error("{}: Error deleting game with ID  {} from database", methodName, id, ex);
             throw new RuntimeException("Error deleting game with ID " + id + " from database", ex);
+        }finally {
+            logger.info("{}: exiting method", methodName);
         }
     }
-
-    /**
-     *  TODO: Add logic to get the average review score and total number of reviews
-     */
-
 }
