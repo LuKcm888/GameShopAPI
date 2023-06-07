@@ -99,6 +99,25 @@ public class GameShopController {
     }
 
     /**
+     * Handles the HTTP GET Requests that fetch the total number of reviews for a specific game.
+     *
+     * @param id The ID of the game whose total number of reviews is to be retrieved.
+     * @return a ResponseEntity with either the total number of reviews and HTTP status OK, or HTTP status Not Found
+     *
+     * If the game with the provided ID is found, the total number of reviews is calculated and returned with HTTP status 200 (OK).
+     * If the game is not found, HTTP status 404 (Not Found) is returned.
+     */
+    @GetMapping("/{id}/total-reviews")
+    public ResponseEntity <Integer> getTotalReviews(@PathVariable String id) {
+        try {
+            int totalReviews = gameShopService.getTotalReviews(id);
+            return new ResponseEntity<>(totalReviews, HttpStatus.OK);
+        }catch (RuntimeException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
      * Handles the DELETE request to remove a game by its ID.
      *
      * @param id the unique ID of the game

@@ -151,8 +151,26 @@ public class GameShopService {
     }
 
     /**
-     *  TODO: Add logic to get the total number of reviews
+     * Returns the total number of reviews for a game identified by the provided ID.
+     *
+     * @param gameId the ID of the game
+     * @return the total number of reviews
+     * @throws RuntimeException if no game with the provided ID is found
      */
+    public int getTotalReviews(String gameId) {
+        String methodName = ".getTotalReviews";
+        logger.info("{}: entering method", methodName);
+        Optional<Game> gameOptional = gameRepository.findById(gameId);
+
+        if (gameOptional.isPresent()) {
+            List<Review> reviews = gameOptional.get().getReviews();
+            logger.info("{}: exiting method", methodName);
+            return reviews.size();
+        } else {
+            logger.error( "{} Game with ID {} not found", methodName,gameId);
+            throw new RuntimeException("Error: Game with ID " + gameId + " not found");
+        }
+    }
 
     /**
      * Deletes a game from the database by its ID.
