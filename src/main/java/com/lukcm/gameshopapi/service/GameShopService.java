@@ -173,6 +173,17 @@ public class GameShopService {
     }
 
     /**
+     * This method is used to retrieve games within a specific price range using the repository's
+     * findByPriceBetween method.
+     * @param lowerBound The minimum price of the games.
+     * @param upperBound The maximum price of the games.
+     * @return A list of games within the specified price range.
+     */
+    public List<Game> getGamesByPriceRange(double lowerBound, double upperBound) {
+        return gameRepository.findByPriceBetween(lowerBound, upperBound);
+    }
+
+    /**
      * Deletes a game from the database by its ID.
      *
      * @param id the unique ID of the game

@@ -118,10 +118,23 @@ public class GameShopController {
     }
 
     /**
+     * This API endpoint is used to retrieve games within a specific price range.
+     * @param lowerBound The minimum price of the games (included in the range).
+     * @param upperBound The maximum price of the games (included in the range).
+     * @return A ResponseEntity containing the list of games within the specified price range and
+     * HTTP status OK.
+     */
+    @GetMapping("/price-range")
+    public ResponseEntity<List<Game>> getGamesByPriceRange(@RequestParam double lowerBound, @RequestParam double upperBound) {
+        return new ResponseEntity<>(gameShopService.getGamesByPriceRange(lowerBound, upperBound), HttpStatus.OK);
+    }
+
+    /**
      * Handles the DELETE request to remove a game by its ID.
      *
      * @param id the unique ID of the game
-     * @return a 204 No Content status code if the operation is successful
+     * @return A ResponseEntity containing a 204 No Content status code if the operation
+     * is successful
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGame(@PathVariable String id) {
