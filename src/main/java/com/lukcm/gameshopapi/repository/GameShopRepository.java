@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 
 /**
+ * @author Max_MacKoul
+ *
  * This interface represents the repository layer for the Game model, providing methods for interacting with
  * the underlying MongoDB database. It extends Spring's MongoRepository interface to gain access to common
  * MongoDB operations.

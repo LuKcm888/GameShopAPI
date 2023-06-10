@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * @author Max_MacKoul
+ *
  * This is the main controller class for the GameShop API. It handles all the HTTP requests related to Game objects.
  */
 @RestController
