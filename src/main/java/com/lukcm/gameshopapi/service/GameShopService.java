@@ -6,10 +6,15 @@ import com.lukcm.gameshopapi.repository.GameShopRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import javax.persistence.EntityNotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author Max_MacKoul
@@ -91,6 +96,35 @@ public class GameShopService {
         }finally {
             logger.info("{}: exiting method", methodName);
         }
+    }
+
+    public List<Game> searchGames(String title, String developer, Double minPrice, Double maxPrice, String genre) {
+        // Use Spring Data's ExampleMatcher and Query by Example to create dynamic queries
+        ExampleMatcher matcher = ExampleMatcher.matchingAll()
+                .withMatcher("title", match -> match.ignoreCase().contains())
+                .withMatcher("developer", match -> match.ignoreCase().contains())
+                .withMatcher("genres", match -> match.ignoreCase().contains())
+                .withMatcher("price", match -> match.ignoreCase());
+
+        Game game = new Game();
+        game.setTitle(title);
+        game.setDeveloper(developer);
+        game.setGenres(Collections.singletonList(genre));
+
+        // For price, since we need to handle ranges, we might need to use a custom query, we can't put it here directly.
+        Example<Game> gameExample = Example.of(game, matcher);
+
+        // Fetch all games that match the Example
+        List<Game> games = gameRepository.findAll(gameExample);
+
+        // Filter the results by price range
+        if(minPrice != null || maxPrice != null) {
+            games = games.stream()
+                    .filter(g -> (minPrice == null || g.getPrice() >= minPrice) && (maxPrice == null || g.getPrice() <= maxPrice))
+                    .collect(Collectors.toList());
+        }
+
+        return games;
     }
 
     /**

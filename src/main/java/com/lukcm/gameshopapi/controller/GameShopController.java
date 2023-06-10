@@ -56,9 +56,20 @@ public class GameShopController {
      * @param title the title (or part of the title) to search for
      * @return a list of games that match the search criteria
      */
-    @GetMapping("/search")
+    @GetMapping("/title-search")
     public ResponseEntity<List<Game>> getGameByTitle(@RequestParam String title) {
         return new ResponseEntity<>(gameShopService.getGamesByTitle(title), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Game>> searchGames(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String developer,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String genre) {
+        List<Game> results = gameShopService.searchGames(title, developer, minPrice, maxPrice, genre);
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
     /**
