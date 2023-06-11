@@ -1,6 +1,9 @@
 package com.lukcm.gameshopapi.exception;
 
+import com.lukcm.gameshopapi.service.GameShopService;
 import com.mongodb.MongoException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Handles exceptions of type MongoException. This type of exception is typically thrown
      * when there's an error connecting to MongoDB.
@@ -29,7 +34,9 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MongoException.class)
     public ResponseEntity<String> handleMongoException(MongoException e) {
-        // log the error, here I'm just printing the stack trace, you might want to use a logger
+        String methodName = ".handleMongoException";
+        logger.error("{}: Error connecting to MongoDB.", methodName);
+
         e.printStackTrace();
 
         // return an error response
@@ -46,7 +53,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
+        String methodName = ".handleMissingParams";
         String paramName = ex.getParameterName();
+
+        logger.error("{}: The required parameter {} is missing.  {} ", methodName, paramName, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>("The required parameter " + paramName + " is missing.", HttpStatus.BAD_REQUEST);
     }
 

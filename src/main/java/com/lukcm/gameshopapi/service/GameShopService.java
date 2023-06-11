@@ -1,5 +1,6 @@
 package com.lukcm.gameshopapi.service;
 
+import com.lukcm.gameshopapi.exception.GameServiceException;
 import com.lukcm.gameshopapi.model.Game;
 import com.lukcm.gameshopapi.model.Review;
 import com.lukcm.gameshopapi.repository.GameShopRepository;
@@ -9,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-import javax.persistence.EntityNotFoundException;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public class GameShopService {
      * Retrieves all games from the database.
      *
      * @return a list of all games
-     * @throws RuntimeException if an error occurs during database access
+     * @throws GameServiceException if an error occurs during database access
      */
     public List<Game> getAllGames() {
         String methodName = ".getAllGames";
@@ -51,7 +51,7 @@ public class GameShopService {
             return gameRepository.findAll();
         } catch (DataAccessException ex) {
             logger.error("{}: Error fetching games from database: {}", methodName, ex);
-            throw new RuntimeException("Error fetching games from database", ex);
+            throw new GameServiceException("Error fetching games from database", ex);
         }finally {
             logger.info("{}: exiting method", methodName);
         }
@@ -62,7 +62,7 @@ public class GameShopService {
      *
      * @param id the unique ID of the game
      * @return an Optional containing the game if found, or an empty Optional if not found
-     * @throws RuntimeException if an error occurs during database access
+     * @throws GameServiceException if an error occurs during database access
      */
     public Optional<Game> getGameById(String id) {
         String methodName = ".getGameById";
@@ -72,7 +72,7 @@ public class GameShopService {
             return gameRepository.findById(id);
         } catch (DataAccessException ex) {
             logger.error("{}: Error fetching game with ID {} from database: {}", methodName, id, ex);
-            throw new RuntimeException("Error fetching game with ID " + id + " from database", ex);
+            throw new GameServiceException("Error fetching game with ID " + id + " from database", ex);
         }finally {
             logger.info("{}: exiting method", methodName);
         }
@@ -83,6 +83,7 @@ public class GameShopService {
      *
      * @param title the title (or part of the title) to search for
      * @return a list of games that match the search criteria
+     * @throws GameServiceException if an error occurs during database access
      */
     public List<Game> getGamesByTitle(String title) {
         String methodName = ".getGamesByTitle";
@@ -92,7 +93,7 @@ public class GameShopService {
             return gameRepository.findByTitleContainingIgnoreCase(title);
         }catch (DataAccessException ex) {
             logger.error("{}: Error fetching title from database: {}", methodName, ex);
-            throw new RuntimeException("Error fetching title from database:", ex);
+            throw new GameServiceException("Error fetching title from database:", ex);
         }finally {
             logger.info("{}: exiting method", methodName);
         }
@@ -132,7 +133,7 @@ public class GameShopService {
      *
      * @param game the Game object to add
      * @return the saved Game object
-     * @throws RuntimeException if an error occurs during database access
+     * @throws GameServiceException if an error occurs during database access
      */
     public Game addGame(Game game) {
         String methodName = ".getGameById";
@@ -143,7 +144,7 @@ public class GameShopService {
             return gameRepository.save(game);
         }catch (DataAccessException ex) {
             logger.error("Error fetching games from database", ex);
-            throw new RuntimeException("Error saving game to database", ex);
+            throw new GameServiceException("Error saving game to database", ex);
         }finally {
             logger.info("{}: exiting method", methodName);
         }
@@ -221,7 +222,7 @@ public class GameShopService {
      * Deletes a game from the database by its ID.
      *
      * @param id the unique ID of the game
-     * @throws RuntimeException if an error occurs during database access
+     * @throws GameServiceException if an error occurs during database access
      */
     public void deleteGame(String id) {
         String methodName = ".deleteGame";
@@ -231,7 +232,7 @@ public class GameShopService {
             gameRepository.deleteById(id);
         }catch (DataAccessException ex) {
             logger.error("{}: Error deleting game with ID  {} from database", methodName, id, ex);
-            throw new RuntimeException("Error deleting game with ID " + id + " from database", ex);
+            throw new GameServiceException("Error deleting game with ID " + id + " from database", ex);
         }finally {
             logger.info("{}: exiting method", methodName);
         }
