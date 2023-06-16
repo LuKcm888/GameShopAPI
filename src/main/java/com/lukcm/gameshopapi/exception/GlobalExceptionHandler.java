@@ -1,14 +1,16 @@
 package com.lukcm.gameshopapi.exception;
 
-import com.lukcm.gameshopapi.service.GameShopService;
+import org.springframework.http.HttpHeaders;
 import com.mongodb.MongoException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * @author Max_MacKoul
@@ -58,6 +60,18 @@ public class GlobalExceptionHandler {
 
         logger.error("{}: The required parameter {} is missing.  {} ", methodName, paramName, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>("The required parameter " + paramName + " is missing.", HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Handles AccessDeniedException across the whole application.
+     *
+     * @param ex      the exception caught
+     * @param request the current web request
+     * @return a ResponseEntity object with an error message, empty headers, and an HTTP status code
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(Exception ex, WebRequest request) {
+        return new ResponseEntity<>("Access denied message here", new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 
 }
