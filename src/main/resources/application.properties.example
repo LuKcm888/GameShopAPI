@@ -1,2 +1,6 @@
-spring.data.mongodb.uri="connection_here"
-spring.jackson.serialization.indent_output=true
+spring.data.mongodb.uri=
+spring.jackson.serialization.indent_output=
+spring.security.oauth2.resourceserver.jwt.issuer-uri=
+spring.security.oauth2.resourceserver.jwt.jwk-set-uri=
+spring.security.oauth2.resourceserver.jwt.audience=
+
